@@ -115,7 +115,7 @@ def plot_BTC_chart(df: pd.DataFrame, last_index_of_real_data: int):
         
     # Set title
     fig.update_layout(
-        title_text="Bitcoin (BTC) Pi Cycle Top Indicator",
+        #title_text="Bitcoin (BTC) Pi Cycle Top Indicator",
         xaxis_title="Date",
         yaxis_title="Price (USD)"
     )
@@ -152,12 +152,22 @@ def plot_BTC_chart(df: pd.DataFrame, last_index_of_real_data: int):
             ]),
             font=dict(color="green"),
             #showactive=True,
-            x=-0.1,
+            x=-0.03,
             xanchor="right",
-            #y=1.2,
-            #yanchor="bottom"
+            y=1.1,
+            yanchor="bottom"
             ),
     ]  
+    
+    # move the legend above the chart
+    fig.update_layout(legend=dict(
+    orientation="h",
+    yanchor="bottom",
+    y=1,
+    xanchor="center",
+    x=0.5
+    ))
+    
     
     fig.update_layout(updatemenus=updatemenus)
     
