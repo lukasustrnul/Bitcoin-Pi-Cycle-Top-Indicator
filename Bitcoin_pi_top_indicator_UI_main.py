@@ -53,8 +53,13 @@ with content_col:
     # prepare data for plot
     df_with_guess = prepare_data_for_plot(df, guess_df)
 
+    # make a gap under table to make the UI look nicer
+    st.write("")
+    st.write("")
+    
     # add heading for the plot
     st.write("""### Bitcoin (BTC) Pi Cycle Top Indicator Chart""")
+    
     # plot the data
     plot_BTC_chart(df_with_guess, df.index[-1])
     
