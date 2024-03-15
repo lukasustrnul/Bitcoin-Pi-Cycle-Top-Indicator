@@ -149,7 +149,7 @@ def overwrite_price_file_with_update(df: pd.DataFrame) -> None:
 
 
         
-def main() -> None:
+def load_check_update_overwriteCSV_sequence() -> None:
     current_data = load_BTC_data()
     if check_if_upto_date(current_data) == False:
         update_file = get_data_for_update()
@@ -159,12 +159,8 @@ def main() -> None:
         pass
 
 
-
-# call main() to check if csv file is up-to-date and update it when this file is imported to BTC_top_indicator_main.py
-main()
-
-#if __name__ == '__main__':
-    #main()
+if __name__ == '__main__':
+    load_check_update_overwriteCSV_sequence()
 
 
 

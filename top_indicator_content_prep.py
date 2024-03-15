@@ -39,12 +39,12 @@ def df_with_users_guess() -> pd.DataFrame:
 
 def prepare_data_for_plot(df: pd.DataFrame, guess_df: pd.DataFrame) -> pd.DataFrame:
     """
-    calculates table extended to future based on original dataframe 
+    calculates table extended to the future based on original dataframe 
     (up to date daily historical prices of Bitcoin) and dataframe
-    with users guess for future
+    with users guess for the future
     
     Returns:
-        dataframe extended to future
+        dataframe extended to the future
     """
     # add rows and calculate Close price based on guess_df
     df_with_guess = add_guess_to_df(df, guess_df)
@@ -112,6 +112,8 @@ def additional_information():
              [repository at GitHub](https://github.com/lukasustrnul/Bitcoin-Pi-Cycle-Top-Indicator)""")
     st.write("""Bitcoin Pi Cycle Top Indicator Tool was developed using python and 
              [streamlit](https://streamlit.io/)""")
+    st.write("""Overview of other useful indicators can be found at 
+             [colintalkscrypto.com](https://colintalkscrypto.com/cbbi/)""")
  
 
   

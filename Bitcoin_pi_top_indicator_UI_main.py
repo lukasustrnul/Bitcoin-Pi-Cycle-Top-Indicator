@@ -14,7 +14,7 @@ link: https://positivecrypto.medium.com/the-golden-ratio-multiplier-c2567401e12a
 """
 
 import streamlit as st
-import load_update_price_df
+from load_update_price_df import load_check_update_overwriteCSV_sequence, load_BTC_data
 from top_indicator_content_prep import df_with_users_guess, prepare_data_for_plot, additional_information
 from BTC_plot_with_future_estimate import plot_BTC_chart
 
@@ -24,6 +24,8 @@ st.set_page_config(layout="wide", page_title="Bitcoin (BTC) Pi Cycle Top Indicat
 # set the position and width of the content
 left_boarder, content_col, right_boarder = st.columns([1,12,1])
 
+# initiate function to update CSV with historical prices
+load_check_update_overwriteCSV_sequence()
 
 with content_col:
     # header of the page
@@ -48,18 +50,16 @@ with content_col:
     guess_df = df_with_users_guess()
     
     # Load data
-    df = load_update_price_df.load_BTC_data()
+    df = load_BTC_data()
     
     # prepare data for plot
     df_with_guess = prepare_data_for_plot(df, guess_df)
-
+    
     # make a gap under table to make the UI look nicer
     st.write("")
     st.write("")
-    
     # add heading for the plot
     st.write("""### Bitcoin (BTC) Pi Cycle Top Indicator Chart""")
-    
     # plot the data
     plot_BTC_chart(df_with_guess, df.index[-1])
     
