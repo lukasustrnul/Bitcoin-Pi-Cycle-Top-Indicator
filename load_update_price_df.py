@@ -34,7 +34,8 @@ def yesterdays_date() -> date:
     # get today's date
     today = date.today()
     # calculate yesterday's date
-    yesterday = today - timedelta(days=1)
+    yesterday_datetime = today - timedelta(days=1)
+    yesterday = pd.to_datetime(yesterday_datetime)
     return yesterday
 
 
@@ -48,7 +49,7 @@ def load_BTC_data() -> pd.DataFrame:
         dataframe with all historical prices of bitcoin
     """
     df = pd.read_csv("BTC-USD_price.csv")
-    df['Date']= pd.to_datetime(df['Date'])
+    df["Date"]= pd.to_datetime(df["Date"])
     return df
     
 
@@ -115,9 +116,9 @@ def get_data_for_update() -> pd.DataFrame:
 
     # Create pandas DataFrame
     df = pd.DataFrame(data)
-    # omitt last line as it is likely current date values which will be changing further during the day
+    # omit last line as it is likely current date values which will be changing further during the day
     df = df.iloc[0:-1,:]
-    # sort the dataframe by date from the oldest on top to newest data at the bottom
+    # sort the dataframe by date from the oldest on top to the newest data at the bottom
     df.sort_values(by="Date", inplace = True, ignore_index = True)
     return df
     
@@ -128,7 +129,7 @@ def update_df(df, update_file):
         # get the last date in last version of BTC price history
         last_date_uptodate = last_date_updated(df)
         # find the index of the same date in the update_file
-        index_of_last_date_uptodate_in_update = update_file.index[update_file['Date'] == last_date_uptodate].tolist()
+        index_of_last_date_uptodate_in_update = update_file.index[update_file["Date"] == last_date_uptodate].tolist()
         # add 1 to the index to get index from which the new data should be taken and added to full history
         index_to_start = index_of_last_date_uptodate_in_update[0]+1
         data_to_add = update_file.iloc[index_to_start: , :]
