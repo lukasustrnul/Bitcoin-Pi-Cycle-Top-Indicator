@@ -118,7 +118,7 @@ def get_data_for_update() -> pd.DataFrame:
     # omitt last line as it is likely current date values which will be changing further during the day
     df = df.iloc[0:-1,:]
     # sort the dataframe by date from the oldest on top to newest data at the bottom
-    df.sort_values('Date', inplace = True, ignore_index = True)
+    df.sort_values(by="Date", inplace = True, ignore_index = True)
     return df
     
     
