@@ -14,7 +14,7 @@ import pandas as pd
 from datetime import date, timedelta
 from bs4 import BeautifulSoup
 import requests
-
+import streamlit as st
 
 
 def last_date_updated(df: pd.DataFrame) -> date:
@@ -119,7 +119,11 @@ def get_data_for_update() -> pd.DataFrame:
     # omit last line as it is likely current date values which will be changing further during the day
     df = df.iloc[0:-1,:]
     # sort the dataframe by date from the oldest on top to the newest data at the bottom
-    df.sort_values(by="Date", inplace = True, ignore_index = True)
+    if "Date" in df.columns:
+        df.sort_values(by="Date", inplace=True, ignore_index=True)
+    else:
+        # Handle the case where 'Date' is missing (e.g., print a message)
+        st.write("An error occurred in update of price data.")
     return df
     
     
