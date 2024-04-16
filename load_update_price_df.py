@@ -67,7 +67,7 @@ def check_if_upto_date(df: pd.DataFrame) -> bool:
     return df_is_updated
 
 
-
+@st.cache_data(ttl=60*60*24)
 def get_data_for_update() -> pd.DataFrame:
     """
     Scraps latest historical prices of bitcoin from yahoo finance using BeautifulSoup
