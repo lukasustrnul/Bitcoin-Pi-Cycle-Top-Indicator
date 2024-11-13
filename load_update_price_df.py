@@ -68,7 +68,7 @@ def check_if_upto_date(df: pd.DataFrame) -> bool:
 
 
 @st.cache_data(ttl=60*60*24)
-def get_data_for_update() -> pd.DataFrame:
+def get_data_for_update_old() -> pd.DataFrame:
     """
     Scraps latest historical prices of bitcoin from yahoo finance using BeautifulSoup
     """ 
@@ -127,6 +127,39 @@ def get_data_for_update() -> pd.DataFrame:
     return df
     
     
+@st.cache_data(ttl=60*60*24)
+def get_data_for_update() -> pd.DataFrame:
+    """
+    Fetches the latest historical prices of Bitcoin from Yahoo Finance API.
+    """ 
+    # API endpoint URL for historical data
+    url = "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?range=1y&interval=1d"
+    headers = { 'User-Agent': 'Mozilla/5.0' }
+
+    # Fetch the data in JSON format
+    response = requests.get(url, headers=headers, timeout=5)
+    data = response.json()
+
+    # Parse the data to get timestamps and price information
+    timestamps = data['chart']['result'][0]['timestamp']
+    prices = data['chart']['result'][0]['indicators']['quote'][0]
+
+    # Create a DataFrame from the parsed data
+    df = pd.DataFrame({
+        'Date': pd.to_datetime(timestamps, unit='s'),
+        'Open': prices['open'],
+        'High': prices['high'],
+        'Low': prices['low'],
+        'Close': prices['close'],
+        'Volume': prices['volume']
+    })
+
+    # Remove rows with any missing data (if present)
+    df.dropna(inplace=True)
+    # Sort the dataframe by date from the oldest to the newest data
+    df.sort_values(by="Date", inplace=True, ignore_index=True)
+
+    return df
 
 def update_df(df, update_file):
     try:
