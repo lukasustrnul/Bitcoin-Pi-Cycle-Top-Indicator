@@ -54,9 +54,9 @@ def crossunder(df, line1, line2):
   df['crossunder_SMA_350'] = (df[line1] > df[line2]) & (df[line1].shift(1) <= df[line2].shift(1))
 
   # Fill the first value with False (no crossover before the first data point)
-  df['crossunder_2SMA_350'].iloc[0] = False
-  df['crossunder_1.62SMA_350'].iloc[0] = False
-  df['crossunder_SMA_350'].iloc[0] = False
+  df.loc[0,'crossunder_2SMA_350'] = False
+  df.loc[0,'crossunder_1.62SMA_350'] = False
+  df.loc[0,'crossunder_SMA_350'] = False
 
   return df
 
