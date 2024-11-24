@@ -193,10 +193,11 @@ def load_check_update_overwriteCSV_sequence(return_df: bool = False):
         update_file = get_data_for_update()
         fullprice_history_df = update_df(current_data, update_file)
         overwrite_price_file_with_update(fullprice_history_df)
+        if return_df:
+            return fullprice_history_df
     else:
         pass
-    if return_df:
-        return fullprice_history_df
+
 
 
 if __name__ == '__main__':
