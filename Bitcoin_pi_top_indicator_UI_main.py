@@ -24,7 +24,7 @@ st.set_page_config(layout="wide", page_title="Bitcoin (BTC) Pi Cycle Top Indicat
 # set the position and width of the content
 left_boarder, content_col, right_boarder = st.columns([1,12,1])
 
-# initiate function to update CSV with historical prices and load updated data
+# initiate function to update CSV with historical prices and load the data
 df = load_check_update_overwriteCSV_sequence(return_df = True)
 
 with content_col:
@@ -48,8 +48,7 @@ with content_col:
 
     # show table with guessed values
     guess_df = df_with_users_guess()
-    
-   
+
     # prepare data for plot
     df_with_guess = prepare_data_for_plot(df, guess_df)
     

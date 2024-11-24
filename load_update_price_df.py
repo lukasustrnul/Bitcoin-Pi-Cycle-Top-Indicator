@@ -67,7 +67,7 @@ def check_if_upto_date(df: pd.DataFrame) -> bool:
     return df_is_updated
 
 
-@st.cache_data(ttl=60*60*24)
+
 def get_data_for_update_old() -> pd.DataFrame:
     """
     Scraps latest historical prices of bitcoin from yahoo finance using BeautifulSoup
@@ -81,7 +81,10 @@ def get_data_for_update_old() -> pd.DataFrame:
     response = requests.get(url, headers = headers, timeout = 5)
     soup = BeautifulSoup(response.content, "html.parser")
     # Find the relevant table element (<tbody>)
-    table = soup.find("tbody")
+    table = soup.find("<tbody>")
+    print(type(table))
+    print(len(table))
+
 
     # Extract data from table rows
     data = []
@@ -125,13 +128,12 @@ def get_data_for_update_old() -> pd.DataFrame:
         # Handle the case where 'Date' is missing (e.g., print a message)
         st.write("An error occurred in update of price data.")
     return df
-    
-    
-@st.cache_data(ttl=60*60*24)
+
+
 def get_data_for_update() -> pd.DataFrame:
     """
     Fetches the latest historical prices of Bitcoin from Yahoo Finance API.
-    """ 
+    """
     # API endpoint URL for historical data
     url = "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?range=1y&interval=1d"
     headers = { 'User-Agent': 'Mozilla/5.0' }
@@ -143,6 +145,7 @@ def get_data_for_update() -> pd.DataFrame:
     # Parse the data to get timestamps and price information
     timestamps = data['chart']['result'][0]['timestamp']
     prices = data['chart']['result'][0]['indicators']['quote'][0]
+    adjclose = data['chart']['result'][0]['indicators']['adjclose'][0]
 
     # Create a DataFrame from the parsed data
     df = pd.DataFrame({
@@ -151,15 +154,20 @@ def get_data_for_update() -> pd.DataFrame:
         'High': prices['high'],
         'Low': prices['low'],
         'Close': prices['close'],
+        'Adj Close': adjclose['adjclose'],
         'Volume': prices['volume']
     })
-
-    # Remove rows with any missing data (if present)
-    df.dropna(inplace=True)
+    df["Date"] = pd.to_datetime(df["Date"])
+    df = df.iloc[0:-1,:]
     # Sort the dataframe by date from the oldest to the newest data
-    df.sort_values(by="Date", inplace=True, ignore_index=True)
-
+    if "Date" in df.columns:
+        df.sort_values(by="Date", inplace=True, ignore_index=True)
+    else:
+        # Handle the case where 'Date' is missing (e.g., print a message)
+        st.write("An error occurred in update of price data.")
     return df
+
+    
 
 def update_df(df, update_file):
     try:
@@ -196,7 +204,7 @@ def load_check_update_overwriteCSV_sequence(return_df: bool = False):
         if return_df:
             return fullprice_history_df
     else:
-        pass
+        return current_data
 
 
 
