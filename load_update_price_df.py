@@ -187,7 +187,7 @@ def overwrite_price_file_with_update(df: pd.DataFrame) -> None:
 
 
         
-def load_check_update_overwriteCSV_sequence(return_df: bool = False) -> None:
+def load_check_update_overwriteCSV_sequence(return_df: bool = False):
     current_data = load_BTC_data()
     if check_if_upto_date(current_data) == False:
         update_file = get_data_for_update()
