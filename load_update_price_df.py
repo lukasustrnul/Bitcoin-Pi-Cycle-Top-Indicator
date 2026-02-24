@@ -135,7 +135,7 @@ def get_data_for_update() -> pd.DataFrame:
     Fetches the latest historical prices of Bitcoin from Yahoo Finance API.
     """
     # API endpoint URL for historical data
-    url = "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?range=1y&interval=1d"
+    url = "https://query1.finance.yahoo.com/v8/finance/chart/BTC-USD?range=10y&interval=1d"
     headers = { 'User-Agent': 'Mozilla/5.0' }
 
     # Fetch the data in JSON format
