@@ -6,6 +6,8 @@ __pycache__/
 .Python
 build/
 dist/
+!dist/
+!dist/index.html
 .eggs/
 *.egg-info/
 *.egg
