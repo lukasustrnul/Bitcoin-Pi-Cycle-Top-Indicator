@@ -63,3 +63,9 @@ desktop.ini
 # Keep placeholder files
 !.gitkeep
 !.dockerkeep
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
