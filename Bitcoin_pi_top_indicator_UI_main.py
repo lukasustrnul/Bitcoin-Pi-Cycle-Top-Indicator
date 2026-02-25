@@ -14,7 +14,7 @@ link: https://positivecrypto.medium.com/the-golden-ratio-multiplier-c2567401e12a
 """
 
 import streamlit as st
-from load_update_price_df import load_check_update_overwriteCSV_sequence
+from app_data_loader import load_data_for_app
 from top_indicator_content_prep import df_with_users_guess, prepare_data_for_plot, additional_information
 from BTC_plot_with_future_estimate import plot_BTC_chart
 
@@ -25,11 +25,14 @@ st.set_page_config(layout="wide", page_title="Bitcoin (BTC) Pi Cycle Top Indicat
 left_boarder, content_col, right_boarder = st.columns([1,12,1])
 
 # initiate function to update CSV with historical prices and load the data
-df = load_check_update_overwriteCSV_sequence(return_df = True)
+df, data_warning = load_data_for_app()
 
 with content_col:
     # header of the page
     st.header('Bitcoin Pi Cycle Top Indicator', divider = "violet")
+
+    if data_warning:
+        st.warning(data_warning)
     
     # add introduction and disclaimer to navigate first-time user to important information
     st.write(""" **Disclaimer: Nothing contained in this web should be considered as investment or trading advice.**  
