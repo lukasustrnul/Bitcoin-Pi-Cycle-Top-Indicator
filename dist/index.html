@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bitcoin Pi Cycle Top Indicator (stlite)</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(180deg, #0f172a, #111827);
+        color: #e5e7eb;
+      }
+
+      #loading-screen {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        background: rgba(15, 23, 42, 0.95);
+        z-index: 9999;
+        transition: opacity 200ms ease;
+      }
+
+      .loader-wrap {
+        max-width: 38rem;
+        padding: 2rem;
+      }
+
+      .spinner {
+        width: 44px;
+        height: 44px;
+        margin: 0 auto 1rem auto;
+        border-radius: 50%;
+        border: 4px solid #334155;
+        border-top-color: #38bdf8;
+        animation: spin 900ms linear infinite;
+      }
+
+      .loading-title {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .loading-copy {
+        margin: 0.75rem 0 0;
+        opacity: 0.9;
+      }
+
+      .local-note {
+        margin-top: 1.1rem;
+        padding: 0.75rem 0.9rem;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        background: #0b1220;
+        font-size: 0.92rem;
+      }
+
+      #stlite-app {
+        min-height: 100vh;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading-screen">
+      <div class="loader-wrap">
+        <div class="spinner" aria-hidden="true"></div>
+        <h1 class="loading-title">Preparing the app…</h1>
+        <p class="loading-copy">
+          Streamlit and Python packages are loading in your browser. This may take a moment on first run.
+        </p>
+        <p class="local-note">
+          The app runs locally in your browser via stlite (Pyodide), so no Python server process is required.
+        </p>
+      </div>
+    </div>
+
+    <div id="stlite-app"></div>
+
+    <script type="module">
+      import { mount } from "https://cdn.jsdelivr.net/npm/@stlite/browser@0.76.0/build/stlite.js";
+
+      const appRoot = document.getElementById("stlite-app");
+      const loadingScreen = document.getElementById("loading-screen");
+
+      const SOURCE_FILES = [
+        "../Bitcoin_pi_top_indicator_UI_main.py",
+        "../app_data_loader.py",
+        "../top_indicator_content_prep.py",
+        "../top_indic_calc.py",
+        "../BTC_plot_with_future_estimate.py",
+        "../load_update_price_df.py",
+        "../BTC-USD_price.csv"
+      ];
+
+      const decodeRequirements = async (response) => {
+        const buffer = await response.arrayBuffer();
+        const utf8 = new TextDecoder("utf-8").decode(buffer);
+        if (utf8.includes("\u0000")) {
+          return new TextDecoder("utf-16le").decode(buffer);
+        }
+        return utf8;
+      };
+
+      const parseRequirements = (rawRequirements) =>
+        rawRequirements
+          .replace(/\r/g, "")
+          .split("\n")
+          .map((line) => line.trim())
+          .filter((line) => line && !line.startsWith("#"));
+
+      const loadFiles = async (paths) => {
+        const entries = await Promise.all(
+          paths.map(async (path) => {
+            const response = await fetch(path);
+            if (!response.ok) {
+              throw new Error(`Could not load ${path} (${response.status})`);
+            }
+            const content = await response.text();
+            return [path.replace("../", ""), content];
+          })
+        );
+
+        return Object.fromEntries(entries);
+      };
+
+      try {
+        const reqResponse = await fetch("../requirements.txt");
+        if (!reqResponse.ok) {
+          throw new Error(`Could not load requirements.txt (${reqResponse.status})`);
+        }
+
+        const [rawRequirements, files] = await Promise.all([
+          decodeRequirements(reqResponse),
+          loadFiles(SOURCE_FILES)
+        ]);
+
+        const requirements = parseRequirements(rawRequirements);
+
+        await mount(
+          {
+            entrypoint: "Bitcoin_pi_top_indicator_UI_main.py",
+            files,
+            requirements,
+            streamlitConfig: {
+              client: {
+                toolbarMode: "minimal"
+              }
+            }
+          },
+          appRoot
+        );
+      } catch (error) {
+        console.error(error);
+        loadingScreen.querySelector(".loading-title").textContent = "Failed to start the app";
+        loadingScreen.querySelector(".loading-copy").textContent =
+          "Please ensure this file is served from a web server and project files are available next to the dist folder.";
+      } finally {
+        loadingScreen.style.opacity = "0";
+        setTimeout(() => {
+          loadingScreen.style.display = "none";
+        }, 220);
+      }
+    </script>
+  </body>
+</html>
