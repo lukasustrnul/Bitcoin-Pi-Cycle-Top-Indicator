@@ -29,7 +29,7 @@
       }
 
       .loader-wrap {
-        max-width: 38rem;
+        max-width: 42rem;
         padding: 2rem;
       }
 
@@ -60,6 +60,26 @@
         border-radius: 0.5rem;
         background: #0b1220;
         font-size: 0.92rem;
+      }
+
+      .error-panel {
+        margin-top: 1rem;
+        text-align: left;
+        border: 1px solid #7f1d1d;
+        background: #1f0b0b;
+        border-radius: 0.5rem;
+        padding: 0.9rem;
+      }
+
+      .error-details {
+        margin: 0.6rem 0 0;
+        padding: 0.65rem;
+        border-radius: 0.4rem;
+        background: #0f172a;
+        border: 1px solid #334155;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 0.84rem;
       }
 
       #stlite-app {
@@ -94,6 +114,8 @@
 
       const appRoot = document.getElementById("stlite-app");
       const loadingScreen = document.getElementById("loading-screen");
+      const loadingTitle = loadingScreen.querySelector(".loading-title");
+      const loadingCopy = loadingScreen.querySelector(".loading-copy");
 
       const SOURCE_FILES = [
         "../Bitcoin_pi_top_indicator_UI_main.py",
@@ -136,7 +158,37 @@
         return Object.fromEntries(entries);
       };
 
+      const showFailure = (error) => {
+        console.error(error);
+        loadingTitle.textContent = "Failed to start the app";
+        loadingCopy.textContent =
+          "The app did not mount. Troubleshooting details are shown below.";
+
+        const details = [
+          `Error: ${error?.message ?? String(error)}`,
+          "",
+          "Quick checks:",
+          "1) Serve this file through HTTP (e.g., `python -m http.server`) instead of opening via file://.",
+          "2) In browser DevTools, check Console + Network for failed package/file loads.",
+          "3) If packages fail to resolve, trim requirements.txt to pyodide-compatible packages only.",
+          "4) Hard refresh (Ctrl+F5) or open in a private window to bypass cached bundles."
+        ].join("\n");
+
+        const panel = document.createElement("div");
+        panel.className = "error-panel";
+        panel.innerHTML = `<strong>Diagnostics</strong><pre class="error-details">${details}</pre>`;
+        loadingScreen.querySelector(".loader-wrap").append(panel);
+      };
+
+      let mounted = false;
+
       try {
+        if (window.location.protocol === "file:") {
+          throw new Error(
+            "This page is opened with file://. Browser fetch rules usually block loading local dependencies for stlite."
+          );
+        }
+
         const reqResponse = await fetch("../requirements.txt");
         if (!reqResponse.ok) {
           throw new Error(`Could not load requirements.txt (${reqResponse.status})`);
@@ -162,16 +214,17 @@
           },
           appRoot
         );
+
+        mounted = true;
       } catch (error) {
-        console.error(error);
-        loadingScreen.querySelector(".loading-title").textContent = "Failed to start the app";
-        loadingScreen.querySelector(".loading-copy").textContent =
-          "Please ensure this file is served from a web server and project files are available next to the dist folder.";
+        showFailure(error);
       } finally {
-        loadingScreen.style.opacity = "0";
-        setTimeout(() => {
-          loadingScreen.style.display = "none";
-        }, 220);
+        if (mounted) {
+          loadingScreen.style.opacity = "0";
+          setTimeout(() => {
+            loadingScreen.style.display = "none";
+          }, 220);
+        }
       }
     </script>
   </body>
