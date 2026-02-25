@@ -172,7 +172,7 @@ def plot_BTC_chart(df: pd.DataFrame, last_index_of_real_data: int):
     fig.update_layout(updatemenus=updatemenus)
     
     # Show the figure in the app
-    BTC_plot = st.plotly_chart(fig, use_container_width=True)
+    BTC_plot = st.plotly_chart(fig, width='stretch')
     return BTC_plot
 
 
