@@ -20,3 +20,14 @@ Chart can be switched to fullscreen mode but more importantly, it is possible to
 
 
 ![Fig 5](/supplemental/05_chart_expl_and_tips.jpg 'Fig. 5: Additional tips and explanations')
+
+
+## Local stlite build (no Python server)
+If you want to run the browser-only stlite version, serve the repository with a local HTTP server and open the root URL.
+
+```bash
+python -m http.server 8000
+```
+
+Then open `http://127.0.0.1:8000/` (it redirects to `dist/index.html`). If you open `dist/index.html` directly via `file://`, browser security rules can block dependency loading.
+
